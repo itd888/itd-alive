@@ -55,7 +55,7 @@ class Alive
 
     /** @throws */
     public static function getMultiAlive($keys){
-        return self::getIns()->getHandle()->hMGet($keys);
+        return self::getIns()->getHandle()->hMGet(self::hashKey,$keys);
     }
 
 
