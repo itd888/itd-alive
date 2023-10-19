@@ -9,6 +9,8 @@ class Alive
     private static $instance;
     private $handler;
 
+    private const hashKey='ALIVE';
+
     public function __construct() {
         if (empty($this->handler)) {
             $host = iEnv("REDIS_A.HOST");
@@ -43,16 +45,19 @@ class Alive
 
     /** @throws */
     public static function setAlive($key) {
-        self::getIns()->getHandle()->set(self::parseKey($key), date('Y-m-d H:i:s'));
+        self::getIns()->getHandle()->hset(self::hashKey, $key, date('Y-m-d H:i:s'));
     }
 
     /** @throws */
     public static function getAlive($key) {
-        return self::getIns()->getHandle()->get(self::parseKey($key));
+        return self::getIns()->getHandle()->hget(self::hashKey,$key);
     }
 
-    private static function parseKey($key) {
-        return 'AL_' . $key;
+    /** @throws */
+    public static function getMultiAlive($keys){
+        return self::getIns()->getHandle()->hMGet($keys);
     }
+
+
 
 }
