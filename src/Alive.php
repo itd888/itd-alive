@@ -2,7 +2,6 @@
 
 namespace itd;
 
-use Redis;
 
 class Alive
 {
@@ -16,15 +15,14 @@ class Alive
             $host = iEnv("REDIS_A.HOST");
             $port = iEnv("REDIS_A.PORT");
             $pass = iEnv("REDIS_A.PASS");
-            $expire = iEnv("REDIS_A.EXPIRE");
+            //$expire = iEnv("REDIS_A.EXPIRE"); 使用setex 参考tp Redis的重写
             $options = array(
                 'host' => $host ?: '127.0.0.1',
                 'port' => $port ?: 6379,
                 'password' => $pass ?: '',
-                'expire' => $expire
             );
 
-            $this->handler = new Redis($options);
+            $this->handler = new \Redis;
             $this->handler->connect($options ['host'], $options ['port']);
             if (isset($options['password'])) {
                 $this->handler->auth($options ['password']);
