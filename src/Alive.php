@@ -37,7 +37,7 @@ class Alive
         return self::$instance;
     }
 
-    private function getHandle(): Redis {
+    private function getHandle(): \Redis {
         return $this->handler;
     }
 
