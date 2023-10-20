@@ -33,7 +33,7 @@ class Alive
     }
 
     private static function getIns(): Alive {
-        if (self::$instance) {
+        if (!self::$instance) {
             self::$instance = new self();
         }
         return self::$instance;
