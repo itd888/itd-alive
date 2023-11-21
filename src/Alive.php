@@ -82,6 +82,7 @@ class Alive
     /** @throws */
     public static function getAlive($key)
     {
+        $key = self::getProjectKey($key);
         return self::getIns()->getHandle()->get($key);
     }
 
@@ -95,8 +96,30 @@ class Alive
      */
     public static function getMultiAlive($keys)
     {
-        return self::getIns()->getHandle()->mGet($keys);
+        $newKeys = [];
+        foreach ($keys as $key) {
+            $newKeys[] = self::getProjectKey($key);
+        }
+        return self::getIns()->getHandle()->mGet($newKeys);
+    }
+
+    private static function getProjectKey($key)
+    {
+        return self::getProjectName() . '_' . $key;
     }
 
 
+    private static function getProjectName()
+    {
+        $arr = explode(DIRECTORY_SEPARATOR, __DIR__);
+        $flag = false;
+        foreach ($arr as $dir) {
+            if ($flag) {
+                return $dir;
+            }
+            if ($dir == 'www') {
+                $flag = true;
+            }
+        }
+    }
 }
