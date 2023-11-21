@@ -8,9 +8,10 @@ class Alive
     private static $instance;
     private $handler;
 
-    private const hashKey='ALIVE';
+    private const hashKey = 'ALIVE';
 
-    public function __construct() {
+    public function __construct()
+    {
         if (empty($this->handler)) {
             $host = iEnv("REDIS_A.HOST");
             $port = iEnv("REDIS_A.PORT");
@@ -30,32 +31,72 @@ class Alive
         }
     }
 
-    private static function getIns(): Alive {
+    private static function getIns(): Alive
+    {
         if (!self::$instance) {
             self::$instance = new self();
         }
         return self::$instance;
     }
 
-    private function getHandle(): \Redis {
+    private function getHandle(): \Redis
+    {
         return $this->handler;
     }
 
-    /** @throws */
-    public static function setAlive($key) {
-        self::getIns()->getHandle()->hset(self::hashKey, $key, date('Y-m-d H:i:s'));
+    /** hash永久保存 @throws */
+    public static function hsetAlive($key)
+    {
+        self::getIns()->getHandle()->hset(self::hashKey, $key, time());
     }
 
     /** @throws */
-    public static function getAlive($key) {
-        return self::getIns()->getHandle()->hget(self::hashKey,$key);
+    public static function hgetAlive($key)
+    {
+        return self::getIns()->getHandle()->hget(self::hashKey, $key);
+    }
+
+    public static function hcheckAlive($key, $limitTime)
+    {
+        return (time() - self::hGetAlive($key)) <= $limitTime;
+    }
+
+    /**
+     * @throws
+     */
+    public static function hgetMultiAlive($keys)
+    {
+        return self::getIns()->getHandle()->hMGet(self::hashKey, $keys);
+    }
+
+    /** 默认最多保存一天  @throws */
+    public static function setAlive($key, $expire = 86400)
+    {
+        if ($expire > 0) {
+            self::getIns()->getHandle()->setex($key, $expire, time());
+        } else {
+            self::getIns()->getHandle()->set($key, time());
+        }
     }
 
     /** @throws */
-    public static function getMultiAlive($keys){
-        return self::getIns()->getHandle()->hMGet(self::hashKey,$keys);
+    public static function getAlive($key)
+    {
+        return self::getIns()->getHandle()->get($key);
     }
 
+    public static function checkAlive($key, $limitTime)
+    {
+        return (time() - self::getAlive($key)) <= $limitTime;
+    }
+
+    /**
+     * @throws
+     */
+    public static function getMultiAlive($keys)
+    {
+        return self::getIns()->getHandle()->mGet($keys);
+    }
 
 
 }
