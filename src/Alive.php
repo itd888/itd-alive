@@ -47,13 +47,13 @@ class Alive
     /** hash永久保存 @throws */
     public static function hsetAlive($key)
     {
-        self::getIns()->getHandle()->hset(self::hashKey, $key, time());
+        self::getIns()->getHandle()->hset(self::getProjectHash(), $key, time());
     }
 
     /** @throws */
     public static function hgetAlive($key)
     {
-        return self::getIns()->getHandle()->hget(self::hashKey, $key);
+        return self::getIns()->getHandle()->hget(self::getProjectHash(), $key);
     }
 
     public static function hcheckAlive($key, $limitTime)
@@ -66,7 +66,7 @@ class Alive
      */
     public static function hgetMultiAlive($keys)
     {
-        return self::getIns()->getHandle()->hMGet(self::hashKey, $keys);
+        return self::getIns()->getHandle()->hMGet(self::getProjectHash(), $keys);
     }
 
     /** 默认最多保存一天  @throws */
@@ -106,6 +106,11 @@ class Alive
     private static function getProjectKey($key)
     {
         return self::getProjectName() . '_' . $key;
+    }
+
+    private static function getProjectHash()
+    {
+        return self::hashKey.'_'.self::getProjectName();
     }
 
 
