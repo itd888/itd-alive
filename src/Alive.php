@@ -87,11 +87,12 @@ class Alive
         return self::getIns()->getHandle()->setex($key, $expire, $momentTimeStamp);
     }
 
+    /** @throws */
     public static function getMoment($key) {
         $key = self::getProjectKey($key);
         return self::getIns()->getHandle()->get($key);
     }
-    
+
     /**
      * @throws
      */
